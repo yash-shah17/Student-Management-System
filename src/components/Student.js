@@ -51,6 +51,17 @@ export default function Student(props) {
     l_name: state.l_name,
     emailId: state.emailId,
   };
+  
+   let textChanged = (event) => {
+    if (event.target.name === "id") {
+      setId(event.target.value);
+    } else if (event.target.name === "name") {
+      setName(event.target.value);
+    } else if (event.target.name === "address") {
+      setAddress(event.target.value);
+    }
+  };
+
 
   const saveStudent = (event) => {
     event.preventDefault();
