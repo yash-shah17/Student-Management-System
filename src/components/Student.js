@@ -3,16 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Container, Form, Card, Button } from "react-bootstrap";
 import { Navigate, useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 export default function Student(props) {
-  const [state, setState] = useState({
-    id: "",
-    f_name: "",
-    l_name: "",
-    emailId: "",
-  });
+  const [id, setId] = useState(null);
+  const [name, setName] = useState(null);
+  const [address, setAddress] = useState(null);
 
   const { studentId } = useParams(); // Get the Path Parameter from the URL
   const navigate = useNavigate();
@@ -20,39 +15,25 @@ export default function Student(props) {
   useEffect(() => {
     if (studentId) {
       axios
-        .get(`http://localhost:8080/students/${studentId}`)
+        .get("http://localhost:8080/student/" + studentId)
         .then((response) => {
           if (response.data != null) {
-            setState({
-              f_name: response.data.f_name,
-              l_name: response.data.l_name,
-              emailId: response.data.emailId,
-              id: response.data.id,
-            });
+            setId(response.data.id);
+            setName(response.data.name);
+            setAddress(response.data.address);
           }
         })
         .catch((error) => props.showAlert("danger", "Error"));
     }
   }, []);
 
-  const textChanged = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    setState({
-      ...state,
-      [name]: value,
-    });
-  };
-
   let student = {
-    id: state.id,
-    f_name: state.f_name,
-    l_name: state.l_name,
-    emailId: state.emailId,
+    id: id,
+    name: name,
+    address: address,
   };
-  
-   let textChanged = (event) => {
+
+  let textChanged = (event) => {
     if (event.target.name === "id") {
       setId(event.target.value);
     } else if (event.target.name === "name") {
@@ -62,22 +43,17 @@ export default function Student(props) {
     }
   };
 
-
-  const saveStudent = (event) => {
+  let saveStudent = (event) => {
     event.preventDefault();
-    // console.log(student);
-
-    axios
-      .post("http://localhost:8080/students", student)
-      .then((response) => {
-        // console.log(response.data);
-        if (response.data != null) {
-          // props.showAlert("success", "Record added successfully");
-          notify("record added successfully", false);
-          setState({ id: "", f_name: "", l_name: "", emailId: "" });
-        }
-      })
-      .catch((error) => props.showAlert("danger", "Error"));
+    
+      axios
+        .post("http://localhost:8080/student", student)
+        .then((response) => {
+          if (response.data != null) {
+            props.showAlert("success", "Record added successfully");
+          }
+        })
+        .catch((error) => props.showAlert("danger", "Error"));
   };
 
   let updateStudent = (event) => {
@@ -96,73 +72,49 @@ export default function Student(props) {
         <Card>
           <Form onSubmit={studentId != null ? updateStudent : saveStudent}>
             <Card.Header>
-              <strong>
-                {studentId != null
-                  ? "Update Student Information"
-                  : "Add Student Information"}
-              </strong>
+              <strong>{studentId!=null? "Update Student Information":"Add Student Information"}</strong>
             </Card.Header>
             <Card.Body>
               <Form.Group className="mb-3">
                 <Form.Label>Id</Form.Label>
                 <Form.Control
                   name="id"
-                  value={state.id}
+                  value={id}
                   type="text"
                   placeholder="Enter id"
                   onChange={textChanged}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>First Name</Form.Label>
+                <Form.Label>Name</Form.Label>
                 <Form.Control
-                  name="f_name"
-                  value={state.f_name}
+                  name="name"
+                  value={name}
                   type="text"
-                  placeholder="Enter first name"
+                  placeholder="Enter name"
                   onChange={textChanged}
                 />
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Last Name</Form.Label>
+                <Form.Label>Address</Form.Label>
                 <Form.Control
-                  name="l_name"
-                  value={state.l_name}
+                  name="address"
+                  value={address}
                   type="text"
-                  placeholder="Enter last name"
-                  onChange={textChanged}
-                />
-              </Form.Group>
-              <Form.Group className="mb-3">
-                <Form.Label>Email ID</Form.Label>
-                <Form.Control
-                  name="emailId"
-                  value={state.emailId}
-                  type="text"
-                  placeholder="Enter Email Id"
+                  placeholder="Enter address"
                   onChange={textChanged}
                 />
               </Form.Group>
             </Card.Body>
             <Card.Footer>
-              <Button variant="primary" type="submit" onClick={notify}>
+              <Button variant="primary" type="submit">
                 {studentId != null ? "Update" : "Submit"}
               </Button>
             </Card.Footer>
           </Form>
         </Card>
       </Container>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
     </div>
   );
 }
+
