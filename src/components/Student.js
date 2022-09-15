@@ -80,21 +80,14 @@ export default function Student(props) {
       .catch((error) => props.showAlert("danger", "Error"));
   };
 
-  const updateStudent = (event) => {
+  let updateStudent = (event) => {
     event.preventDefault();
-    console.log(studentId);
-    axios
-      .put(`http://localhost:8080/students/${studentId}`, student)
-      .then((response) => {
-        if (response.data != null) {
-          props.showAlert("success", "Record updated successfully");
-          notify("record updated successfully", false);
-          navigate("/listStudents"); // Navigate to Students List Components
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    axios.put("http://localhost:8080/student/" + studentId, student).then((response) => {
+      if (response.data != null) {
+        props.showAlert("success", "Record updated successfully");
+        navigate("/listStudents"); // Navigate to Students List Components
+      }
+    });
   };
 
   return (
